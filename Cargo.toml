@@ -1,0 +1,18 @@
+[package]
+name    = "redraw"
+version = "0.2.3"
+authors = ["zxv <zxv@tfwno.gf>"]
+build   = "build.rs"
+license = "GPL-3.0+"
+publish = false
+
+[build-dependencies]
+vergen        = "*"
+
+[dependencies]
+rand          = "0.3"
+image         = "0.16"
+docopt        = "0.8"
+docopt_macros = "0.8"
+serde         = "1.0"
+serde_derive  = "1.0"
