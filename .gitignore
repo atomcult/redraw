@@ -1,2 +1,16 @@
 /target/
 **/*.rs.bk
+
+# Ignore images supported by `image` crate
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.png
+*.gif
+*.bmp
+*.ico
+*.webp
+*.ppm
+
+rusty-tags.vi
