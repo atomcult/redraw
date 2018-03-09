@@ -16,9 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>. //
 ///////////////////////////////////////////////////////////////////////////
 
-#![feature(plugin)]
-#![plugin(docopt_macros)]
-
 extern crate rand;
 extern crate image;
 
@@ -33,7 +30,7 @@ use image::RgbImage;
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
-docopt!(Args derive Debug, "
+const USAGE: &str = "
 ReDraw
 
 Usage:
@@ -63,24 +60,40 @@ Options:
 
 Shapes:
   lines
-  rectangles
-", flag_iterate:            u64,
-   flag_min:                u32,
-   flag_max:                u32,
-   flag_adapt_rate:         u64,
-   flag_adapt_coeff:        f64,
-   flag_animation_interval: u64,
-   flag_blur_amount:        f32);
+  rectangles";
+
+#[derive(Debug, Deserialize)]
+struct Args {
+    arg_file: String,
+    flag_version: bool,
+    flag_quiet: bool,
+    flag_output: String,
+    flag_iterate: u64,
+    flag_min: u32,
+    flag_max: u32,
+    flag_shapes: String,
+    flag_uniform: bool,
+    flag_adaptive: bool,
+    flag_adapt_rate: u64,
+    flag_adapt_coeff: f64,
+    flag_animate: bool,
+    flag_animation_interval: u64,
+    flag_blur: bool,
+    flag_blur_amount: f32,
+    flag_bias: bool,
+    flag_debug: bool,
+}
 
 fn main() {
     // Parse arguments and set defaults
-    let args: Args = Args::docopt().deserialize()
+    let args: Args = docopt::Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
 
     if args.flag_version { println!("{}", version()); return }
 
     // FIXME: DEBUG
-    if args.flag_DEBUG { println!("{:?}", args); }
+    if args.flag_debug { println!("{:?}", args); }
 
     // Parse and initialize shapes vec
     let shapes = args.flag_shapes.split(',');
@@ -98,7 +111,7 @@ fn main() {
     let shape_fns = shape_fns;
 
     // Load image
-    let img = image::open(&Path::new(&args.arg_FILE)).unwrap();
+    let img = image::open(&Path::new(&args.arg_file)).unwrap();
     let img = img.to_rgb();
     let (x_max, y_max) = img.dimensions();
 
@@ -195,7 +208,7 @@ fn main() {
         if args.flag_adaptive && (i - num_objs) > (2u64.pow(adapt_counter) * args.flag_adapt_rate) {
             max = (max as f64 * args.flag_adapt_coeff) as u32;
             if max <= args.flag_min { max = args.flag_min + 1; }
-            if args.flag_DEBUG { println!("\tMAX: {}", max); }
+            if args.flag_debug { println!("\tMAX: {}", max); }
             offset_rng = Range::new((args.flag_min as f64)/(max as f64), 1.);
             adapt_counter += 1;
         }
