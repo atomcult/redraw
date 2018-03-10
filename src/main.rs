@@ -64,7 +64,7 @@ Shapes:
 
 #[derive(Debug, Deserialize)]
 struct Args {
-    arg_file: String,
+    arg_FILE: String,
     flag_version: bool,
     flag_quiet: bool,
     flag_output: String,
@@ -81,7 +81,7 @@ struct Args {
     flag_blur: bool,
     flag_blur_amount: f32,
     flag_bias: bool,
-    flag_debug: bool,
+    flag_DEBUG: bool,
 }
 
 fn main() {
@@ -93,7 +93,7 @@ fn main() {
     if args.flag_version { println!("{}", version()); return }
 
     // FIXME: DEBUG
-    if args.flag_debug { println!("{:?}", args); }
+    if args.flag_DEBUG { println!("{:?}", args); }
 
     // Parse and initialize shapes vec
     let shapes = args.flag_shapes.split(',');
@@ -111,7 +111,7 @@ fn main() {
     let shape_fns = shape_fns;
 
     // Load image
-    let img = image::open(&Path::new(&args.arg_file)).unwrap();
+    let img = image::open(&Path::new(&args.arg_FILE)).unwrap();
     let img = img.to_rgb();
     let (x_max, y_max) = img.dimensions();
 
@@ -208,7 +208,7 @@ fn main() {
         if args.flag_adaptive && (i - num_objs) > (2u64.pow(adapt_counter) * args.flag_adapt_rate) {
             max = (max as f64 * args.flag_adapt_coeff) as u32;
             if max <= args.flag_min { max = args.flag_min + 1; }
-            if args.flag_debug { println!("\tMAX: {}", max); }
+            if args.flag_DEBUG { println!("\tMAX: {}", max); }
             offset_rng = Range::new((args.flag_min as f64)/(max as f64), 1.);
             adapt_counter += 1;
         }
